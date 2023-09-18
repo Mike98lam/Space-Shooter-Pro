@@ -8,20 +8,12 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _enemyPrefab;
     [SerializeField]
-    private GameObject[] powerups;
+    private GameObject[] _powerUps;
     [SerializeField]
     private GameObject _enemyContainer;
    
     private bool _stopSpawning = false;
     
-   
-    void Start()
-    {
-
-        
-        
-    }
-
     public void StartSpawning()
     {
        
@@ -48,13 +40,31 @@ public class SpawnManager : MonoBehaviour
         while (_stopSpawning == false)
         {
             Vector3 posToSpawnPowerup = new Vector3(Random.Range(-9.5f, 9.5f), 7, 0);
-            int randomPowerUp = Random.Range(0, 3);
-            Instantiate(powerups[randomPowerUp], posToSpawnPowerup, Quaternion.identity);
+            int randomPowerUp = Random.Range(0, 6);
+            int _chanceToSpawn = Random.Range(0, 10);
+            if (randomPowerUp == 5 && _chanceToSpawn >= 5)
+            {
+                Instantiate(_powerUps[randomPowerUp], posToSpawnPowerup, Quaternion.Euler(0, 90, 0));
+            }
+            if (randomPowerUp == 3)
+            {
+                Instantiate(_powerUps[randomPowerUp], posToSpawnPowerup, Quaternion.Euler(0, 90, 0));
+            }
+
+            if (randomPowerUp == 4)
+            {
+                Instantiate(_powerUps[randomPowerUp], posToSpawnPowerup, Quaternion.Euler(-90, 0, 0));
+            }
+
+            else if (randomPowerUp == 0 || randomPowerUp == 1 || randomPowerUp == 2)
+            {
+                Instantiate(_powerUps[randomPowerUp], posToSpawnPowerup, Quaternion.identity);
+            }
+
             yield return new WaitForSeconds(Random.Range(3, 8));
         
         }
     }
-
 
     public void OnPlayerDeath()
     {

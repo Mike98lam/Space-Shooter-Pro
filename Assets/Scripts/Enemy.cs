@@ -13,7 +13,9 @@ public class Enemy : MonoBehaviour
 
     private float _fireRate = 3f;
     private float _canFire = -1;
-    //handle to animator component
+
+    private bool _stopShooting = false;
+
     Animator _animator;
 
     private AudioSource _audioSource;
@@ -26,35 +28,19 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Couldn't find the Player");
         }
-        //assign component
+        
         _animator = GetComponent<Animator>();
         if (_animator == null)
         {
             Debug.LogError("Couldn't find the Animator");
         }
-
-
-
     }
+
     void Update()
     {
-
         CalculateMovement();
 
-        if (Time.time > _canFire)
-        {
-            _fireRate = Random.Range(3f, 7f);
-            _canFire = Time.time + _fireRate;
-            GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
-            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
-
-            for (int i = 0; i <lasers.Length; i++)
-            {
-                lasers[i].AssignEnemyLaser();
-            }
-     
-
-        }
+        StartCoroutine(laserFire());
     }
 
     void CalculateMovement()
@@ -68,6 +54,27 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    IEnumerator laserFire()
+    {
+        yield return new WaitForSeconds(Random.Range(0, 2));
+        while (_stopShooting == false)
+        {
+            if (Time.time > _canFire)
+            {
+                _fireRate = Random.Range(3f, 7f);
+                _canFire = Time.time + _fireRate;
+                GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+                Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+
+                for (int i = 0; i < lasers.Length; i++)
+                {
+                    lasers[i].AssignEnemyLaser();
+                }
+            }
+            yield return new WaitForSeconds(0f);
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
@@ -78,10 +85,11 @@ public class Enemy : MonoBehaviour
             {
                 player.Damage();
             }
-           //trigger animation
             _animator.SetTrigger("OnEnemyDeath");
             _enemySpeed = 0;
             _audioSource.Play();
+            _stopShooting = true;
+            Destroy(GetComponent<Collider2D>());
             Destroy(gameObject, 2.8f);
         }
 
@@ -92,13 +100,12 @@ public class Enemy : MonoBehaviour
             {
                 _player.AddScore(10);
             }
-            //trigger animation
             _animator.SetTrigger("OnEnemyDeath");
             _enemySpeed = 0;
             _audioSource.Play();
+            _stopShooting = true;
             Destroy(GetComponent<Collider2D>());
             Destroy(gameObject, 2.8f);
         }
-      
     }
 }

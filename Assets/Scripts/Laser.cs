@@ -20,7 +20,7 @@ public class Laser : MonoBehaviour
         {
             MoveDown();
         }
-        
+
     }
 
     void MoveUp()
