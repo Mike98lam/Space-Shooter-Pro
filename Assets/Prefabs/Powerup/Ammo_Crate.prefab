@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ammo_Crate
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 76cf247f50e38cc43857a89d1a498f66, type: 3}
+      propertyPath: m_TagString
+      value: PowerUp
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 76cf247f50e38cc43857a89d1a498f66, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5

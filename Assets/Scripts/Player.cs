@@ -9,7 +9,6 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private float _speed = 7f;
-    private float _speedMultiplier = 2f;
     [SerializeField]
     private float _fireRate = 0.5f;
     private float _canFire = -1f;
@@ -61,7 +60,10 @@ public class Player : MonoBehaviour
     private bool _thrustersActive = false;
     [SerializeField]
     private GameObject _thrusters;
-    
+
+    [SerializeField]
+    private bool _skullActive = false;
+
     [SerializeField]
     private int _score;
 
@@ -137,50 +139,54 @@ public class Player : MonoBehaviour
 
     void CalculateMovement()
     {
-        
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-
-        Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
-
-        transform.Translate(direction * _speed * Time.deltaTime);
-
-        if (transform.position.x >= 11.26f)
+        if (_skullActive == false)
         {
-            transform.position = new Vector3(-11.26f, transform.position.y, 0);
-        }
-        else if (transform.position.x <= -11.26f)
-        {
-            transform.position = new Vector3(11.26f, transform.position.y, 0);
-        }
+            float horizontalInput = Input.GetAxis("Horizontal");
+            float verticalInput = Input.GetAxis("Vertical");
 
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4.7f, 4.7f), 0);
+            Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && _maxGauge >= 0)
-        {
-            ThrusterOn();
-            _thrusters.transform.localPosition = new Vector3(-0.017f, -3.5f, 0);
-            _thrusters.transform.localScale = new Vector3(1, 1, 0);
-            StartCoroutine(ThrusterRoutine());
-            
-            if (_maxGauge <= 0)
+            transform.Translate(direction * _speed * Time.deltaTime);
+
+            if (transform.position.x >= 11.26f)
+            {
+                transform.position = new Vector3(-11.26f, transform.position.y, 0);
+            }
+            else if (transform.position.x <= -11.26f)
+            {
+                transform.position = new Vector3(11.26f, transform.position.y, 0);
+            }
+
+            transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4.7f, 4.7f), 0);
+
+            if (Input.GetKeyDown(KeyCode.LeftShift) && _maxGauge >= 0)
+            {
+                ThrusterOn();
+                _thrusters.transform.localPosition = new Vector3(-0.017f, -3.5f, 0);
+                _thrusters.transform.localScale = new Vector3(1, 1, 0);
+                StartCoroutine(ThrusterRoutine());
+
+                if (_maxGauge <= 0)
+                {
+                    ThrusterOff();
+                    _thrusters.transform.localPosition = new Vector3(-0.017f, -2.5f, 0);
+                    _thrusters.transform.localScale = new Vector3(0.5f, 0.5f, 0);
+                }
+
+            }
+            else if (Input.GetKeyUp(KeyCode.LeftShift))
             {
                 ThrusterOff();
                 _thrusters.transform.localPosition = new Vector3(-0.017f, -2.5f, 0);
                 _thrusters.transform.localScale = new Vector3(0.5f, 0.5f, 0);
+                StartCoroutine(ThrusterRegenerationRoutine());
             }
+            _thrusterSlider.value = _maxGauge;
 
         }
-        else if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            ThrusterOff();
-            _thrusters.transform.localPosition = new Vector3(-0.017f, -2.5f, 0);
-            _thrusters.transform.localScale = new Vector3(0.5f, 0.5f, 0);
-            StartCoroutine(ThrusterRegenerationRoutine());
-        }
-        _thrusterSlider.value = _maxGauge;
-
     }
+
+       
 
     void LaserFire()
     {
@@ -276,7 +282,7 @@ public class Player : MonoBehaviour
         _speedUpActive = true;
         if (_speedUpActive == true)
         {
-            _speed *= _speedMultiplier;
+            _speed = 14;
         }
         StartCoroutine(SpeedUpPowerDownRoutine());
     }
@@ -285,7 +291,7 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(5.0f);
         _speedUpActive = false;
-        _speed /= _speedMultiplier;
+        _speed = 7f;
     }
 
     public void ShieldsActive()
@@ -360,13 +366,29 @@ public class Player : MonoBehaviour
     private void ThrusterOn()
     {
         _thrustersActive = true;
-        _speed = 11;
+        if (_speedUpActive == false)
+        {
+            _speed = 11;
+        }
+        else if ( _speedUpActive == true)
+        {
+            _speed = 18;
+        }
+        
     }
 
     private void ThrusterOff()
     {
         _thrustersActive = false;
-        _speed = 7;
+        if (_speedUpActive == false)
+        {
+            _speed = 7;
+        }
+        else if (_speedUpActive == true)
+        {
+            _speed = 14;
+        }
+        
     }
 
     IEnumerator ThrusterRoutine()
@@ -388,4 +410,15 @@ public class Player : MonoBehaviour
         }
     }
     
+    public void Skull()
+    {
+        _skullActive = true;
+        StartCoroutine(SkullPowerDown());
+    }
+
+    IEnumerator SkullPowerDown()
+    {
+        yield return new WaitForSeconds(3);
+        _skullActive = false;
+    }
 }

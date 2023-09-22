@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Medical_Kit
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 16a76383a00be564e95d11481e3c27a9, type: 3}
+      propertyPath: m_TagString
+      value: PowerUp
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 16a76383a00be564e95d11481e3c27a9, type: 3}
       propertyPath: m_LocalScale.x
       value: 3.5

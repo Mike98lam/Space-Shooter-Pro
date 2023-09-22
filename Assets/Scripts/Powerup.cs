@@ -53,6 +53,9 @@ public class Powerup : MonoBehaviour
                     case 5:
                         player.MachineFire();
                         break;
+                    case 6:
+                        player.Skull();
+                        break;
                 }
             }
             Destroy(gameObject);

@@ -44,7 +44,7 @@ public class Laser : MonoBehaviour
 
         if (transform.position.y <= -7.5f)
         {
-            if (transform.parent != null)
+            if (transform.parent != null && _isEnemyLaser == false)
             {
                 Destroy(transform.parent.gameObject);
             }

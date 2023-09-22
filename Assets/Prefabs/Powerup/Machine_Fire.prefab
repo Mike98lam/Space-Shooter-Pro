@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Machine_Fire
       objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 3710b280301d03a45babbf6445d09e03, type: 3}
+      propertyPath: m_TagString
+      value: PowerUp
+      objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 3710b280301d03a45babbf6445d09e03, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -7,20 +7,33 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField]
     private TMP_Text _scoreText;
+
     [SerializeField]
     private Sprite[] _liveSprites;
+
     [SerializeField]
     private Image _livesImg;
+
     [SerializeField]
     private TMP_Text _gameOverText;
+
     [SerializeField]
     private TMP_Text _restartText;
+
     [SerializeField]
     private TMP_Text _ammoText;
+
+    [SerializeField]
+    private TMP_Text _waveText;
+
+    [SerializeField]
+    private TMP_Text _enemyLeftText;
+
     private GameManager _gameManager;
 
     [SerializeField]
     private Slider _thrusterSlider;
+
     [SerializeField]
     private Image _thrusterColor;
 
@@ -30,6 +43,7 @@ public class UIManager : MonoBehaviour
        
         _scoreText.text = "Score: " + 0; //assign text component to the handle
         _ammoText.text = "Ammo Count: 15";
+        _enemyLeftText.text = "Enemies Left: " + 0;
         _gameOverText.gameObject.SetActive(false);
         _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         if (_gameManager == null)
@@ -56,6 +70,22 @@ public class UIManager : MonoBehaviour
         ThrusterColor();
     }
 
+    public void EnemyRemaining(int enemyLeft)
+    {
+        _enemyLeftText.text = "Enemies Left: " + enemyLeft;
+    }
+    public void UpdateWave(int waveNumber)
+    {
+        if (waveNumber >= 0)
+        _waveText.text = "Wave: " + waveNumber;
+        StartCoroutine(UpdateWave());
+    }
+    IEnumerator UpdateWave()
+    {
+        _waveText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(3);
+        _waveText.gameObject.SetActive(false);
+    }
     public void UpdateScore(int playerScore)
     {
         _scoreText.text = "Score: " + playerScore;
