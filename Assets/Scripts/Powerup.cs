@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
-using UnityEngine.LowLevel;
-using static UnityEditor.Experimental.GraphView.GraphView;
+
 
 public class Powerup : MonoBehaviour
 {
