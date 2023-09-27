@@ -77,14 +77,22 @@ public class UIManager : MonoBehaviour
     public void UpdateWave(int waveNumber)
     {
         if (waveNumber >= 0)
-        _waveText.text = "Wave: " + waveNumber;
-        StartCoroutine(UpdateWave());
+        {
+            _waveText.text = "Wave: " + waveNumber;
+            StartCoroutine(UpdateWave());
+        }
+        
     }
     IEnumerator UpdateWave()
     {
         _waveText.gameObject.SetActive(true);
         yield return new WaitForSeconds(3);
         _waveText.gameObject.SetActive(false);
+    }
+    public void BossWave()
+    {
+        _waveText.text = "Final Boss";
+        StartCoroutine(UpdateWave());
     }
     public void UpdateScore(int playerScore)
     {
@@ -126,6 +134,14 @@ public class UIManager : MonoBehaviour
 
     }
 
+    public void GameCompleteSequence()
+    {
+        _gameManager.GameOver();
+        _gameOverText.gameObject.SetActive(true);
+        _restartText.gameObject.SetActive(true);
+
+        StartCoroutine(GameCompleteFlickerRoutine());
+    }
     IEnumerator GameOverFlickerRoutine()
     {
         while (true)
@@ -135,6 +151,17 @@ public class UIManager : MonoBehaviour
             _gameOverText.text = "";
             yield return new WaitForSeconds(.5f);
         }
+    }
+    IEnumerator GameCompleteFlickerRoutine()
+    {
+        while (true)
+        {
+            _gameOverText.text = "Congratulations!";
+            yield return new WaitForSeconds(.5f);
+            _gameOverText.text = "";
+            yield return new WaitForSeconds(.5f);
+        }
+       
     }
 
     private void ThrusterColor()

@@ -164,3 +164,5 @@ MonoBehaviour:
   _speed: 3
   _powerUpID: 3
   _powerUpAudio: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
+  _explosion: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
+  _explosionPrefab: {fileID: 2868556119250440970, guid: df4befa159fc794458a804df3f1f1a4d, type: 3}

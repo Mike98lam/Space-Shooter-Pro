@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
@@ -8,6 +9,20 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private float _enemySpeed = 4.0f;
     private Player _player;
+
+    private GameObject _playerLaser;
+    private float _distanceFromLaser;
+    
+
+    private GameObject _powerUp;
+    private float _distanceFromPowerup;
+    private float _detectionRange = 5f;
+    private float _powerUpFire = -1;
+
+    private float _distance;
+    [SerializeField]
+    private float _aggressionSpeed = 2f;
+    private float _aggressionRange = 5;
 
     [SerializeField]
     private GameObject _laserPrefab;
@@ -18,9 +33,10 @@ public class Enemy : MonoBehaviour
 
     private float _fireRate = 3f;
     private float _canFire = -1;
+    
 
     private float _enemyXMovement;
-    private float _randomEnemyMovement;
+   
 
     
     private bool _stopShooting = false;
@@ -41,8 +57,8 @@ public class Enemy : MonoBehaviour
         _player = GameObject.Find("Player").GetComponent<Player>();
         _audioSource = GetComponent<AudioSource>();
         _enemyXMovement = Random.Range(-9.5f, 9.6f);
-        _randomEnemyMovement = Random.Range(1, 3);
-        _shieldRandomizer = Random.Range(0, 2);
+        
+        _shieldRandomizer = Random.Range(0, 4);
         if (_shieldRandomizer == 1)
         {
             _shieldActive = true;
@@ -64,9 +80,19 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
+        _powerUp = GameObject.FindGameObjectWithTag("PowerUp");
+        _playerLaser = GameObject.FindGameObjectWithTag("Laser");
         CalculateMovement();
 
         StartCoroutine(laserFire());
+
+        AggressionType();
+
+        SmartType();
+
+        PickUpShot();
+
+        DodgeType();
     }
 
     void CalculateMovement()
@@ -138,6 +164,92 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    void AggressionType()
+    {
+        if (_player != null)
+        {
+            _distance = Vector3.Distance(_player.transform.position, this.transform.position);
+            if (_distance <= _aggressionRange && _enemyID == 2)
+            {
+                Vector3 direction = this.transform.position - _player.transform.position;
+                direction = direction.normalized;
+                this.transform.position -= direction * Time.deltaTime * _aggressionSpeed;
+            }
+        }
+        
+    }
+
+    void SmartType()
+    {
+        if (_player != null)
+        {
+            if (this.transform.position.y < _player.transform.position.y && _enemyID == 3)
+            {
+                if (Time.time > _canFire)
+                {
+                    _fireRate = Random.Range(2f, 5f);
+                    _canFire = Time.time + _fireRate;
+                    GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+
+                }
+
+            }
+        }
+        
+    }
+
+    void PickUpShot()
+    {
+        if (_powerUp != null)
+        {
+            _distanceFromPowerup = Vector3.Distance(_powerUp.transform.position, this.transform.position);
+            if (_distanceFromPowerup <= _detectionRange)
+            {
+
+                if (this.transform.position.x <= _powerUp.transform.position.x + 1 && this.transform.position.x >= _powerUp.transform.position.x - 1)
+                {
+                    if (Time.time > _powerUpFire)
+                    {
+                        _fireRate = Random.Range(2f, 5f);
+                        _powerUpFire = Time.time + _fireRate;
+                        GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+                        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+
+                        for (int i = 0; i < lasers.Length; i++)
+                        {
+                            lasers[i].AssignEnemyLaser();
+                        }
+                        Debug.Log("Enemy tried to shoot a powerup");
+                    }
+                }
+            }
+        }
+    }
+
+    void DodgeType()
+    {
+        if (_playerLaser != null)
+        {
+           
+            _distanceFromLaser = Vector3.Distance(_playerLaser.transform.position, this.transform.position);
+            if (_distanceFromLaser <= _detectionRange && _enemyID == 4) 
+            {
+                if (this.transform.position.x <= _playerLaser.transform.position.x + 1 && this.transform.position.x >= _playerLaser.transform.position.x - 1)
+                {
+                    if (this.transform.position.x <= _playerLaser.transform.position.x)
+                    {
+                        transform.Translate(Vector3.left * _enemySpeed * Time.deltaTime);
+                    }
+
+                    if (this.transform.position.x > _playerLaser.transform.position.x)
+                    {
+                        transform.Translate(Vector3.right * _enemySpeed * Time.deltaTime);
+                    }
+                }
+            }
+        }
+    }
+    
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
@@ -157,6 +269,7 @@ public class Enemy : MonoBehaviour
                 _stopShooting = true;
                 Destroy(GetComponent<Collider2D>());
                 _spawnManager.EnemyReduce();
+                _aggressionSpeed = 0;
                 Destroy(gameObject, 2.8f);
             }
 
@@ -184,6 +297,7 @@ public class Enemy : MonoBehaviour
                 _stopShooting = true;
                 Destroy(GetComponent<Collider2D>());
                 _spawnManager.EnemyReduce();
+                _aggressionSpeed = 0;
                 Destroy(gameObject, 2.8f);
             }
             

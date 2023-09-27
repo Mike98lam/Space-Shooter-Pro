@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.LowLevel;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Powerup : MonoBehaviour
 {
@@ -11,7 +12,17 @@ public class Powerup : MonoBehaviour
     private int _powerUpID;
     [SerializeField]
     private AudioClip _powerUpAudio;
-
+    [SerializeField]
+    private AudioClip _explosion;
+    [SerializeField]
+    private GameObject _explosionPrefab;
+    private Player _player;
+    private float _collectSpeed = 6f;
+   
+    void Start()
+    {
+        _player = GameObject.Find("Player").GetComponent<Player>();
+    }
     void Update()
     {
         
@@ -20,6 +31,17 @@ public class Powerup : MonoBehaviour
         if (transform.position.y <= -7f)
         {
             Destroy(gameObject);
+        }
+
+        if (Input.GetKey("c"))
+        {
+            if (_player != null)
+            {
+                Vector3 direction = this.transform.position - _player.transform.position;
+                direction = direction.normalized;
+                this.transform.position -= direction * Time.deltaTime * _collectSpeed;
+            }
+            
         }
       
     }
@@ -56,8 +78,20 @@ public class Powerup : MonoBehaviour
                     case 6:
                         player.Skull();
                         break;
+                    case 7:
+                        player.HomingLaser();
+                        break;
                 }
             }
+            Destroy(gameObject);
+        }
+
+        if (other.tag == "Enemy Laser" && this.tag == "PowerUp")
+        {
+           
+            AudioSource.PlayClipAtPoint(_explosion, transform.position);
+            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+            Destroy(GetComponent<Collider2D>());
             Destroy(gameObject);
         }
     }

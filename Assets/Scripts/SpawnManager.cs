@@ -12,19 +12,21 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _enemyContainer;
     [SerializeField]
-    private float _enemySpawnRate = 4f;
+    private float _enemySpawnRate = 5f;
     [SerializeField]
     private int _waveNum = 1;
     [SerializeField]
     private int _enemyNum;
     [SerializeField]
     private int _enemyRemaining;
+   
  
 
     private UIManager _uiManager;
 
     private bool _playerAlive = true;
-    private bool _stopSpawning = false;
+    private bool _stopSpawningEnemy = false;
+    private bool _stopSpawningPowerup = false;
 
     void Start()
     {
@@ -51,44 +53,77 @@ public class SpawnManager : MonoBehaviour
     public void NewWave()
     {
         _waveNum++;
-        _uiManager.UpdateWave(_waveNum);
-        _stopSpawning = false;
-        StartCoroutine(SpawnEnemyRoutine());
+        if (_waveNum <= 5)
+        {
+            _uiManager.UpdateWave(_waveNum);
+            _stopSpawningEnemy = false;
+            StartCoroutine(SpawnEnemyRoutine());
+        }
+        
+        if (_waveNum == 6)
+        {
+            BossWave();
+        }
+    }
+
+    public void BossWave()
+    {
+        
+        _uiManager.BossWave();
+        StartCoroutine(BossWaveRoutine());
+    }
+    IEnumerator BossWaveRoutine()
+    {
+        _enemyNum = 1;
+        _enemyRemaining = _enemyNum;
+        _uiManager.EnemyRemaining(_enemyRemaining);
+        yield return new WaitForSeconds(3f);
+        GameObject bossEnemy = Instantiate(_enemyPrefab[5], new Vector3(0, 7.2f, 0), Quaternion.Euler(0, 90, 270));
+        bossEnemy.transform.parent = _enemyContainer.transform;
     }
     IEnumerator SpawnEnemyRoutine()
     {
        
-        _enemyNum = 5 * _waveNum;
+        _enemyNum = 3 * _waveNum;
         _enemyRemaining = _enemyNum;
         _uiManager.EnemyRemaining(_enemyRemaining);
         yield return new WaitForSeconds(3f);
-        while (_stopSpawning == false)
+        while (_stopSpawningEnemy == false)
         {
-            if (_enemyRemaining > 0)
+            if (_enemyRemaining > 0 && _waveNum <= 5)
             {
-                int randomEnemy = Random.Range(0, 2);
-                Vector3 posToSpawn = new Vector3(Random.Range(-9.5f, 9.5f), 7, 0);
-                GameObject newEnemy = Instantiate(_enemyPrefab[randomEnemy], posToSpawn, Quaternion.identity);
-                newEnemy.transform.parent = _enemyContainer.transform;
-                yield return new WaitForSeconds(_enemySpawnRate);
-
+                    int randomEnemy = Random.Range(0, _waveNum);
+                    Vector3 posToSpawn = new Vector3(Random.Range(-9.5f, 9.5f), 7, 0);
+                    GameObject newEnemy = Instantiate(_enemyPrefab[randomEnemy], posToSpawn, Quaternion.identity);
+                    newEnemy.transform.parent = _enemyContainer.transform;
+                    yield return new WaitForSeconds(_enemySpawnRate);
+                
             }
             else
             {
-                _stopSpawning = true;
+                _stopSpawningEnemy = true;
             }
         }
-        if (_stopSpawning == true && _playerAlive == true)
+        if (_stopSpawningEnemy == true && _playerAlive == true)
         {
-            Destroy(GameObject.FindWithTag("Enemy"));
-            NewWave();
+           while (GameObject.FindWithTag("Enemy") != null)
+            {
+                Destroy(GameObject.FindWithTag("Enemy"));
+                yield return 0;
+            }
+
+            if (_waveNum <= 5)
+            {
+                NewWave();
+            }
+            
         }
     }
     
     IEnumerator SpawnPowerupRoutine()
     {
         yield return new WaitForSeconds(3f);
-        while (_stopSpawning == false)
+        while (_stopSpawningPowerup == false)
         {
             Vector3 posToSpawnPowerup = new Vector3(Random.Range(-9.5f, 9.5f), 7, 0);
             int chanceToSpawn = Random.Range(0, 100);
@@ -113,16 +148,20 @@ public class SpawnManager : MonoBehaviour
             {
                 Instantiate(_powerUps[5], posToSpawnPowerup, Quaternion.Euler(0, 90, 0)); // machinefire
             }
-            if (chanceToSpawn >= 55 && chanceToSpawn <70) 
+            if (chanceToSpawn >= 55 && chanceToSpawn <65) 
             {
                 Instantiate(_powerUps[6], posToSpawnPowerup, Quaternion.Euler(0, 180, 0)); // skull debuff
+            }
+            if (chanceToSpawn >= 65 && chanceToSpawn < 70)
+            {
+                Instantiate(_powerUps[7], posToSpawnPowerup, Quaternion.Euler(0, 180, 0)); // homing missle
             }
             if (chanceToSpawn >= 70)
             {
                 Instantiate(_powerUps[3], posToSpawnPowerup, Quaternion.Euler(0, 90, 0)); // ammo
             }
             yield return new WaitForSeconds(Random.Range(3, 8));
-        // Ammo 30% spawn, tripleshot 15% spawn, speedup 15% spawn, shield 15% spawn, heal 5% spawn, skull 15% spawn, machinefire 5% spawn
+        // Ammo 30% spawn, tripleshot 15% spawn, speedup 15% spawn, shield 15% spawn, heal 5% spawn, skull 10% spawn, machinefire 5% spawn, homing missle 5% spawn
         }
     }
 
@@ -130,6 +169,14 @@ public class SpawnManager : MonoBehaviour
     public void OnPlayerDeath()
     {
         _playerAlive = false;
-        _stopSpawning = true;
+        _stopSpawningEnemy = true;
+        _stopSpawningPowerup = true;
+        
+    }
+
+    public void OnBossDeath()
+    {
+        _stopSpawningEnemy = true;
+        _stopSpawningPowerup = true;
     }
 }

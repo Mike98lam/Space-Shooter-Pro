@@ -494,6 +494,10 @@ MonoBehaviour:
   _enemyPrefab:
   - {fileID: 8988040243191541742, guid: 196b6e17b6e16204ea84898d872a29f7, type: 3}
   - {fileID: 9057008401934734699, guid: 9c7085a1dd4cc44488652521d1aa5025, type: 3}
+  - {fileID: 6608608277588303092, guid: e61b536f42f0dfe48a9c8d2255ef697c, type: 3}
+  - {fileID: 8383818432831967982, guid: 085208f8826ae89438f836f3fcd45b84, type: 3}
+  - {fileID: 5263126852330000911, guid: b621cc7ab77ca8346b3f78990d0f91ff, type: 3}
+  - {fileID: 5417767883893381962, guid: 877b0147b8760fd4aaf4ac1e22036e24, type: 3}
   _powerUps:
   - {fileID: 885334212361546345, guid: 861faeb2cde22f742b655ed5c311471c, type: 3}
   - {fileID: 2314672314381574708, guid: 8db6b61160211124e8e2e4c77ff0cd31, type: 3}
@@ -502,6 +506,7 @@ MonoBehaviour:
   - {fileID: 8940834402850147908, guid: c08216fd5ce227542b4ccf9d637c0de5, type: 3}
   - {fileID: 6175604042760750721, guid: e5b22ad9831718c42804e4d74f19d9dd, type: 3}
   - {fileID: 4687512204048385777, guid: b60f625f52caf6942ae10e9dcf49375a, type: 3}
+  - {fileID: 6128692524346172227, guid: a4efb5bc9433a2542b2e1af2635886a4, type: 3}
   _enemyContainer: {fileID: 956715217}
   _enemySpawnRate: 3
   _waveNum: 1
@@ -1012,6 +1017,8 @@ MonoBehaviour:
   _shieldVisualizer: {fileID: 2122997996}
   _rightEngineDmg: {fileID: 1578918470}
   _leftEngineDmg: {fileID: 1567583162}
+  _homingLaserPrefab: {fileID: 7997657770394546613, guid: 342a3a5b88e2eb546b2253ce7b43fdb7, type: 3}
+  _homingActive: 0
   _laserAudio: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _tripleShotActive: 0
   _speedUpActive: 0
@@ -1084,7 +1091,7 @@ Transform:
   m_GameObject: {fileID: 796682906}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.4, y: -2.38, z: 0}
+  m_LocalPosition: {x: 5.26, y: -1.39, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:

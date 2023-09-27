@@ -40,6 +40,11 @@ public class Player : MonoBehaviour
     private GameObject _leftEngineDmg;
 
     [SerializeField]
+    private GameObject _homingLaserPrefab;
+    [SerializeField]
+    private bool _homingActive = false;
+
+    [SerializeField]
     private AudioClip _laserAudio;
     private AudioSource _audioSource;
 
@@ -198,11 +203,20 @@ public class Player : MonoBehaviour
             {
                 Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
             }
+            
+            else if (_homingActive == true)
+            {
+                GameObject HomingLaser = Instantiate(_homingLaserPrefab, transform.position + _offset, Quaternion.identity);
+                Laser Homing = HomingLaser.GetComponent<Laser>();
+                Homing.AssignHomingLaser();
+            }
+             
             else
             {
                 Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
             }
             _audioSource.Play();
+
             if (_machineFireActive == false)
             {
                 AmmoLoss();
@@ -420,5 +434,17 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(3);
         _skullActive = false;
+    }
+
+    public void HomingLaser()
+    {
+        _homingActive = true;
+        StartCoroutine(HomingLaserPowerDownRoutine());
+    }
+    
+    IEnumerator HomingLaserPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5);
+        _homingActive = false;
     }
 }

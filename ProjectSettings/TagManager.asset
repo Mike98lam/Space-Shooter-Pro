@@ -8,6 +8,7 @@ TagManager:
   - Laser
   - PowerUp
   - Enemy Laser
+  - Debuff
   layers:
   - Default
   - TransparentFX
